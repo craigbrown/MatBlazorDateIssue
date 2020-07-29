@@ -1,0 +1,31 @@
+﻿@page "/no-timezone-correction"
+
+@using MatBlazor
+
+<h1>Test Timezone without JavaScript correction</h1>
+
+<br />
+<div>
+    Blazor thinks the current time is @DateTime.Now.ToShortTimeString()<br />
+    Blazor thinks UTC is @DateTime.UtcNow.ToShortTimeString()<br />
+    We are not using JavaScript to get the actual local time on this page.<br />
+    The initial time value of MatDatePicker is @LocalTimeString<br />
+</div>
+<br />
+
+<h5>MatDatePicker</h5>
+<MatDatePicker @bind-Value=SelectedDateTime EnableTime="true" Enable24hours="true" Format="dd MMM yyyy HH:mm"></MatDatePicker>
+
+@code {
+    private DateTime SelectedDateTime { get; set; }
+    private string LocalTimeString { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // When this page first loads, set the MatDatePicker value to UTC
+        if (!firstRender) return;
+        SelectedDateTime = DateTime.Now.ToLocalTime();
+        LocalTimeString = SelectedDateTime.ToShortTimeString();
+        StateHasChanged();
+    }
+}
