@@ -1,5 +1,32 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@using MatBlazor
+@inject TimeZoneService TimeZoneService
 
-Welcome to your new app.
+<h1>Test Timezone</h1>
+
+<br />
+<div>
+    Blazor thinks the current time is @DateTime.Now.ToShortTimeString()<br />
+    Blazor thinks UTC is @DateTime.UtcNow.ToShortTimeString()<br />
+    Using the JavaScript Date function, we can tell the current time is @LocalTimeString<br />
+    The initial time value of MatDatePicker is @LocalTimeString<br />
+</div>
+<br />
+
+<h5>MatDatePicker</h5>
+<MatDatePicker @bind-Value=SelectedDateTime EnableTime="true" Enable24hours="true" Format="dd MMM yyyy HH:mm"></MatDatePicker>
+
+@code {
+    private DateTime SelectedDateTime { get; set; }
+    private string LocalTimeString { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // When this page first loads, set the MatDatePicker value to the browser's local time
+        if (!firstRender) return;
+        SelectedDateTime = await TimeZoneService.GetLocalDateTime();
+        LocalTimeString = SelectedDateTime.ToShortTimeString();
+        StateHasChanged();
+    }
+}
